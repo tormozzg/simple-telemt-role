@@ -1,0 +1,20 @@
+---
+
+- name: Установка telemt
+  hosts: telemt
+  gather_facts: no
+  become: yes
+  vars:
+    ansible_python_interpreter: python3
+  vars_files:
+    - telemt_users.yaml
+  tasks:
+    - name: Установка telemt
+      include_role:
+        name: telemt_install
+    - name: Trigger notify
+      meta: flush_handlers
+    - name: Создаем пользователя {{username}}
+      include_role:
+        name: telemt_user_manage
+      loop: "{{ telemt_users }}"

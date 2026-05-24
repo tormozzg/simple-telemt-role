@@ -1,0 +1,26 @@
+include = "/etc/telemt/general_links.toml"
+include = "/etc/telemt/server_config.toml"
+
+[general]
+use_middle_proxy = false
+
+log_level = "normal"
+
+[general.modes]
+classic = false
+secure = false
+tls = true
+
+
+[server.api]
+enabled = true
+listen = "127.0.0.1:9091"
+whitelist = ["127.0.0.1/32", "::1/128"]
+minimal_runtime_enabled = false
+minimal_runtime_cache_ttl_ms = 1000
+
+[censorship]
+tls_domain = "petrovich.ru"
+mask = true
+tls_emulation = true
+tls_front_dir = "tlsfront"

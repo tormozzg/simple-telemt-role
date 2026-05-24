@@ -1,0 +1,12 @@
+[general.links]
+show = "*"
+
+{% if telemt_public_host is defined %}
+public_host = "{{ telemt_public_host }}"
+{% endif %}
+
+{% if telemt_public_port is defined %}
+public_port = {{ telemt_public_port }}
+{% elif telemt_public_host is defined %}
+public_port = {{ telemt_listen_port }}
+{% endif %}

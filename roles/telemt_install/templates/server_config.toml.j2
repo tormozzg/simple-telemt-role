@@ -1,0 +1,8 @@
+[server]
+port = {{ telemt_listen_port }}
+proxy_protocol = {{ telemt_proxy_protocol }}
+metrics_listen = "127.0.0.1:9190"
+metrics_whitelist = ["127.0.0.1/32", "::1/128"]
+
+[[server.listeners]]
+ip = "{{ telemt_listen_address }}"

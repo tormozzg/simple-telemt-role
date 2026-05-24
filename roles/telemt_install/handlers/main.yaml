@@ -1,0 +1,4 @@
+- name: restart telemt
+  systemd:
+    name: telemt
+    state: restarted

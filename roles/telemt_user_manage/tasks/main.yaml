@@ -1,0 +1,66 @@
+---
+
+- name: Ожидаем старта сервиса
+  uri:
+    method: GET
+    url: "http://127.0.0.1:9091/v1/health"
+    status_code:
+      - 200
+    timeout: 1
+    return_content: no
+  register: telemt_health
+  until:  telemt_health.status == 200
+  retries: 5
+  delay: 5
+
+- name: Проверяем наличие пользователя {{ item.username }}
+  uri:
+    method: GET
+    url: "http://127.0.0.1:9091/v1/users/{{ item.username }}"
+    headers:
+      Accept: application/json
+    status_code:
+      - 200
+      - 404
+    timeout: 1
+    return_content: yes
+  register: user_response
+
+- name: Пользователь {{ item.username }} уже существует
+  debug:
+    msg: "Пользователь {{ item.username }} уже существует. Ссылка прокси: {{ user_response.json.data.links.tls }} "
+  when: user_response.status == 200
+
+- name: Создаем пользователя {{ item.username }}
+  uri:
+    method: POST
+    url: "http://127.0.0.1:9091/v1/users"
+    body:
+      username: "{{ item.username }}"
+      secret: "{{ item.secret }}"
+    body_format: json
+    status_code:
+      - 201
+      - 202
+  when: user_response.status == 404
+
+
+- name: Ожидаем создания пользователя {{ item.username }}
+  uri:
+    method: GET
+    url: "http://127.0.0.1:9091/v1/users/{{ item.username }}"
+    status_code:
+      - 200
+      - 404
+    timeout: 1
+    return_content: yes
+  register: user_created_response
+  when: user_response.status == 404
+  until:  user_created_response.status == 200
+  retries: 10
+  delay: 3
+
+- name: Пользователь {{ item.username }} создан
+  debug:
+    msg: "Пользователь {{ item.username }} создан. Ссылка прокси: {{ user_created_response.json.data.links.tls }} "
+  when: user_response.status == 404

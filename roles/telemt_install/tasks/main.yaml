@@ -1,0 +1,94 @@
+---
+
+- name: Создание группу telemt
+  group:
+    state: present
+    name: telemt
+
+- name: Создание пользователя telemt
+  user:
+    state: present
+    name: telemt
+    group: telemt
+    system: false
+    shell: /usr/sbin/nologin
+
+- name: Проверяем необходимость установки бинарника
+  stat:
+    path: /opt/telemt/telemt
+  register: telemt_file
+
+- name: Создаем папку с бинарником
+  file:
+    state: directory
+    path: /opt/telemt
+    owner: telemt
+    group: telemt
+  when: "not telemt_file is undefined and not telemt_file.stat.exists"
+
+- name: Копируем архив с бинарником
+  unarchive:
+    src: "{{ telemt_download_link }}"
+    remote_src: yes
+    dest: /opt/telemt
+    owner: telemt
+    group: telemt
+  when: "not telemt_file is undefined and not telemt_file.stat.exists"
+
+- name: Назначаем права на исполнение
+  file:
+    path: /opt/telemt/telemt
+    mode: 0755
+  when: "not telemt_file is undefined and not telemt_file.stat.exists"
+
+- name: Создаем папку с настройками
+  file:
+    state: directory
+    path: /etc/telemt
+    owner: telemt
+    group: telemt
+
+- name: Создаем системный сервис
+  copy:
+    src: telemt.service
+    dest: /etc/systemd/system/telemt.service
+    owner: root
+    group: root
+  notify:
+    - restart telemt
+
+- name: Создаем файл настроек
+  copy:
+    src: telemt.toml
+    dest: /etc/telemt/telemt.toml
+    owner: telemt
+    group: telemt
+    force: no
+  notify:
+    - restart telemt
+
+- name: Создаем файл настроек ссылок
+  template:
+    src: general_links.toml.j2
+    dest: /etc/telemt/general_links.toml
+    owner: telemt
+    group: telemt
+  notify:
+    - restart telemt
+
+- name: Создаем файл настроек сервера
+  template:
+    src: server_config.toml.j2
+    dest: /etc/telemt/server_config.toml
+    owner: telemt
+    group: telemt
+  notify:
+      - restart telemt
+
+- name: Включаем сервис в автозагрузку
+  systemd:
+    name: telemt
+    daemon_reload: yes
+    enabled: yes
+    state: started
+
