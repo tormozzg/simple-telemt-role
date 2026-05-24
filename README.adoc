@@ -50,3 +50,19 @@ telemt_users:
           63376430623131343830343134326130343639643335303838623064343534666262333338303338
           3430323163356262323964666235626132356363366333646663
 ----
+
+
+== Переменные для настроек
+
+[source ,yaml]
+----
+# Если telemt сидит за haproxy, то true
+telemt_proxy_protocol: "false"
+telemt_listen_address: "0.0.0.0"
+telemt_listen_port: 8443
+telemt_download_link: https://github.com/telemt/telemt/releases/download/3.4.11/telemt-x86_64-linux-gnu.tar.gz
+
+# Опциональные
+# telemt_public_host: host.com
+# telemt_public_port: 8443
+----
