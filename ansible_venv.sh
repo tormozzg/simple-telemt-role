@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
 # Создаем окружение в локальной папке
-python3 -m venv ansible-venv
+python3 -m venv .venv
 
 # Активируем окружение
-source ansible-venv/bin/activate
+source .venv/bin/activate
 
 # Устанавливаем ansible
 pip install ansible
