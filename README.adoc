@@ -33,7 +33,7 @@ all:
 
 === Пример `telemt_users.yaml`
 
-В примере secret шифрованная строка полученная командой `openssl rand -hex 16 | ansible-vault encrypt_string --vault-pass-file .vault_pass.txt`.
+В примере secret шифрованная строка полученная командой `openssl rand -hex 16 | xargs -I {} ansible-vault {} encrypt_string --vault-pass-file .vault_pass.txt`.
 
 Вместо шифрованной строки можно просто хранить результат `openssl rand -hex 16`.
 
